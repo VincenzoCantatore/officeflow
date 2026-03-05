@@ -1,7 +1,8 @@
 package com.officeflow.controller;
 
 import com.officeflow.domain.Resource;
-import com.officeflow.domain.ResourceType;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import com.officeflow.service.ResourceService;
@@ -10,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/resources")
-public class ResourceController {
+spublic class ResourceController {
 
     private final ResourceService resourceService;
 
