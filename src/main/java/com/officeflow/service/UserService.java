@@ -1,8 +1,8 @@
-package service;
+package com.officeflow.service;
 
-import domain.User;
+import com.officeflow.domain.User;
 import org.springframework.stereotype.Service;
-import repository.UserRepository;
+import com.officeflow.repository.UserRepository;
 
 import java.util.List;
 

@@ -1,9 +1,9 @@
-package com.example.officeflow;
+package com.officeflow;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication(scanBasePackages = "com.example.officeflow")
+@SpringBootApplication(scanBasePackages = "com.officeflow")
 public class OfficeflowApplication {
 
     public static void main(String[] args) {

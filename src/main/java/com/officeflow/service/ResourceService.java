@@ -1,9 +1,9 @@
-package service;
+package com.officeflow.service;
 
-import domain.Resource;
-import domain.ResourceType;
+import com.officeflow.domain.Resource;
+import com.officeflow.domain.ResourceType;
 import org.springframework.stereotype.Service;
-import repository.ResourceRepository;
+import com.officeflow.repository.ResourceRepository;
 
 import java.util.List;
 
@@ -16,16 +16,13 @@ public class ResourceService {
         this.resourceRepository = resourceRepository;
     }
 
-    public List<Resource> getAllResources(ResourceType type) {
-        if (type != null) {
-            return resourceRepository.findByType(type);
-        }
+    public List<Resource> getAllResources() {
         return resourceRepository.findAll();
     }
 
     public Resource createResource(Resource resource) {
         if (resourceRepository.existsByName(resource.getName())) {
-            throw new IllegalArgumentException("Esiste già una risorsa con questo nome");
+            throw new IllegalArgumentException("Esiste già una risorsa registrata con questo nome");
         }
         return resourceRepository.save(resource);
     }

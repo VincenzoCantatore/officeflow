@@ -1,6 +1,6 @@
-package repository;
+package com.officeflow.repository;
 
-import domain.User;
+import com.officeflow.domain.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface UserRepository extends MongoRepository<User, String> {

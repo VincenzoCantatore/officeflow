@@ -1,9 +1,9 @@
-package controller;
+package com.officeflow.controller;
 
-import domain.User;
+import com.officeflow.domain.User;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
-import service.UserService;
+import com.officeflow.service.UserService;
 
 import java.util.List;
 

@@ -1,10 +1,10 @@
-package controller;
+package com.officeflow.controller;
 
-import domain.Resource;
-import domain.ResourceType;
+import com.officeflow.domain.Resource;
+import com.officeflow.domain.ResourceType;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
-import service.ResourceService;
+import com.officeflow.service.ResourceService;
 
 import java.util.List;
 
@@ -19,8 +19,8 @@ public class ResourceController {
     }
 
     @GetMapping
-    public List<Resource> getResources(@RequestParam(required = false) ResourceType type) {
-        return resourceService.getAllResources(type);
+    public List<Resource> getResources() {
+        return resourceService.getAllResources();
     }
 
     @PostMapping
