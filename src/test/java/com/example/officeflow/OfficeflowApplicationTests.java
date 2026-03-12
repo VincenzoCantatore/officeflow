@@ -1,9 +1,10 @@
 package com.example.officeflow;
 
+import com.officeflow.OfficeflowApplication;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
+@SpringBootTest(classes = OfficeflowApplication.class)
 class OfficeflowApplicationTests {
 
     @Test

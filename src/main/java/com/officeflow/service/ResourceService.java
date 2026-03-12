@@ -28,6 +28,7 @@ public class ResourceService {
     }
 
     public void deleteResource(String id) {
+
         resourceRepository.deleteById(id);
     }
 }
