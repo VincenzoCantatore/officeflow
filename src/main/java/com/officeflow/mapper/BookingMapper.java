@@ -9,12 +9,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface BookingMapper {
 
-    // Ignoriamo l'id perché non arriva dal DTO di richiesta,
-    // ma verrà gestito dal database.
-    @Mapping(target = "id", ignore = true)
     Booking toEntity(BookingRequestDTO dto);
 
-    // Qui non serve ignorarlo perché l'id esiste nell'entità
-    // e vogliamo che venga copiato nel ResponseDTO.
     BookingResponseDTO toResponse(Booking booking);
 }
