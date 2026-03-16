@@ -13,4 +13,7 @@ public interface BookingRepository extends MongoRepository<Booking, String> {
 
     @Query("{ 'resourceId': ?0, 'date': ?1, 'startHour': { '$lt': ?3 }, 'endHour': { '$gt': ?2 } }")
     List<Booking> findOverlappingBookings(String resourceId, LocalDate date, LocalTime startHour, LocalTime endHour);
+
+    boolean existsByUserIdAndDate(String userId, LocalDate date);
+    
 }

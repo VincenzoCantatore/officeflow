@@ -27,6 +27,7 @@ public class BookingController {
 
     @GetMapping
     public List<BookingResponseDTO> getBookings() {
+
         return bookingService.getAllBooking();
     }
 
