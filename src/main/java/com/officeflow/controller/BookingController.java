@@ -4,6 +4,7 @@ import com.officeflow.dto.request.BookingRequestDTO;
 import com.officeflow.dto.response.BookingResponseDTO;
 import com.officeflow.service.BookingService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,18 +18,14 @@ public class BookingController {
     private final BookingService bookingService;
 
     @PostMapping
-    public ResponseEntity<?> createBooking(@RequestBody BookingRequestDTO request) {
-        try {
-            return ResponseEntity.ok(bookingService.createBooking(request));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<BookingResponseDTO> createBooking(@RequestBody BookingRequestDTO request) {
+
+        return new ResponseEntity<>(bookingService.createBooking(request), HttpStatus.CREATED);
     }
 
     @GetMapping
-    public List<BookingResponseDTO> getBookings() {
-
-        return bookingService.getAllBooking();
+    public ResponseEntity<List<BookingResponseDTO>> getBookings() {
+        return ResponseEntity.ok(bookingService.getAllBooking());
     }
 
     @DeleteMapping("/{id}")
