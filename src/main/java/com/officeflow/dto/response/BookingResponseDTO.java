@@ -24,4 +24,6 @@ public class BookingResponseDTO {
 
     @JsonFormat(pattern = "HH:mm")
     private LocalTime endHour;
+
+    private String status;
 }

@@ -20,4 +20,6 @@ public class Booking {
     private LocalDate date;
     private LocalTime startHour;
     private LocalTime endHour;
+    private String status =  "ATTESA";
+    private LocalTime adesso ;
 }

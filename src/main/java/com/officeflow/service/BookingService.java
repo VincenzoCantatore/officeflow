@@ -13,6 +13,7 @@ import com.officeflow.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -24,7 +25,10 @@ public class BookingService {
     private final UserRepository userRepository;
     private final ResourceRepository resourceRepository;
 
+
     public BookingResponseDTO createBooking(BookingRequestDTO request) {
+
+        LocalTime adesso = LocalTime.now();
 
         // utente inesistente
         if (!userRepository.existsById(request.getUserId())) {
@@ -34,6 +38,11 @@ public class BookingService {
         // risorsa inesisetnte
         var resource = resourceRepository.findById(request.getResourceId())
                 .orElseThrow(() -> new ResourceNotFoundException("La risorsa con ID " + request.getResourceId() + " non esiste."));
+
+        // orario inizio prenotazione precedente a quello corrente
+        if (!request.getStartHour().isAfter(adesso)) {
+            throw new BookingConflictException("L'orario di inizio deve essere successivo all'orario corrente");
+        }
 
         // valisazione oraria
         if (!request.getStartHour().isBefore(request.getEndHour())) {
