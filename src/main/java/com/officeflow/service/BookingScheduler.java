@@ -20,7 +20,7 @@ public class BookingScheduler {
 
     // secondi - minuti - ore - giorno - mese - anno
     //fixedrate per TEST (in millisecondi)
-    @Scheduled(fixedRate = 10000)
+    @Scheduled(fixedRate = 600000)
     public void updatePastBookings() {
         log.info("Inizio task automatico: aggiornamento booking passati...");
 
