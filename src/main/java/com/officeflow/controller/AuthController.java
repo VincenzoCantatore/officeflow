@@ -2,8 +2,10 @@ package com.officeflow.controller;
 
 import com.officeflow.config.JwtUtils;
 import com.officeflow.domain.User;
+import com.officeflow.domain.StoredToken; // Importa il nuovo model
 import com.officeflow.dto.request.LoginRequestDTO;
 import com.officeflow.dto.response.JwtResponseDTO;
+import com.officeflow.repository.TokenRepository; // Importa il nuovo repository
 import com.officeflow.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
+
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -23,28 +27,38 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
     private final JwtUtils jwtUtils;
+    private final TokenRepository tokenRepository; // Aggiunto per gestire il database dei token
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
-        // Usiamo il service che abbiamo modificato per criptare la password
         return ResponseEntity.ok(userService.createUser(user));
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequestDTO loginRequest) {
-        // 1. Spring Security controlla se email e password (in chiaro)
-        // corrispondono a quelle (criptate) nel DB
+        // 1. Autenticazione standard email/password
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
 
-        // 2. Se l'autenticazione fallisce, Spring lancia un'eccezione qui.
-        // Se passa, generiamo il Token JWT
+        // 2. Generazione del Token JWT
         String jwt = jwtUtils.generateToken(authentication);
 
-        // 3. Recuperiamo l'utente loggato dal contesto di Spring
+        // 3. Recupero dettagli utente
         User userDetails = (User) authentication.getPrincipal();
 
-        // 4. Rispondiamo con il Token e i dettagli base
+        // --- NUOVA LOGICA: SALVATAGGIO NEL DATABASE ---
+        // Prima di rispondere, salviamo il token nel DB per renderlo "ufficiale"
+        StoredToken storedToken = StoredToken.builder()
+                .token(jwt)
+                .userEmail(userDetails.getEmail())
+                .revoked(false)
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        tokenRepository.save(storedToken);
+        // ----------------------------------------------
+
+        // 4. Risposta al client
         return ResponseEntity.ok(new JwtResponseDTO(
                 jwt,
                 userDetails.getEmail(),
