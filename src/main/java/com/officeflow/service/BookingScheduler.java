@@ -1,7 +1,7 @@
 package com.officeflow.service;
 
 import com.officeflow.domain.Booking;
-import com.officeflow.domain.enums.BookingStatus;
+import com.officeflow.domain.enums.BookingStatusEnum;
 import com.officeflow.repository.BookingRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,13 +28,13 @@ public class BookingScheduler {
         LocalDate today = LocalDate.now();
         LocalTime now = LocalTime.now();
 
-        List<Booking> expiredToday = bookingRepository.findByDateAndEndHourBeforeAndStatusNot(today, now, BookingStatus.COMPLETATO);
+        List<Booking> expiredToday = bookingRepository.findByDateAndEndHourBeforeAndStatusNot(today, now, BookingStatusEnum.COMPLETATO);
 
         if (expiredToday.isEmpty()) {
             log.info("Nessun booking scaduto al momento.");
         } else {
             for (Booking booking : expiredToday) {
-                booking.setStatus(BookingStatus.COMPLETATO);
+                booking.setStatus(BookingStatusEnum.COMPLETATO);
                 log.info("Booking " + booking.getId() + " completato (scaduto alle " + booking.getEndHour() + ")");
             }
             bookingRepository.saveAll(expiredToday);

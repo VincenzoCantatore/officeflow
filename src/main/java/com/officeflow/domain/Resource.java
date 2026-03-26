@@ -1,6 +1,6 @@
 package com.officeflow.domain;
 
-import com.officeflow.domain.enums.ResourceType;
+import com.officeflow.domain.enums.ResourceTypeEnum;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -18,7 +18,7 @@ public class Resource {
     @NotBlank(message = "Il nome della risorsa è obbligatorio")
     private String name;
 
-    private ResourceType type;
+    private ResourceTypeEnum type;
 
     @Min(value = 1, message = "Il piano deve essere maggiore di 0")
     private int floor;

@@ -1,7 +1,7 @@
 package com.officeflow.service;
 
 import com.officeflow.domain.User;
-import com.officeflow.domain.enums.UserRole;
+import com.officeflow.domain.enums.UserRoleEnum;
 import com.officeflow.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,9 +30,9 @@ public class UserService {
         user.setPassword(encodedPassword);
 
         if (user.getEmail().toLowerCase().endsWith("@officeflow.admin.com")) {
-            user.setRole(UserRole.ADMIN);
+            user.setRole(UserRoleEnum.ADMIN);
         } else {
-            user.setRole(UserRole.USER);
+            user.setRole(UserRoleEnum.USER);
         }
         return userRepository.save(user);
         }

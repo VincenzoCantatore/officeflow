@@ -1,6 +1,6 @@
 package com.officeflow.dto.response;
 
-import com.officeflow.domain.enums.UserRole;
+import com.officeflow.domain.enums.UserRoleEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 public class JwtResponseDTO {
     private String token;
     private String email;
-    private UserRole role;
+    private UserRoleEnum role;
 }

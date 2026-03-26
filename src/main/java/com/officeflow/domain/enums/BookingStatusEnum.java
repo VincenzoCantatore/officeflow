@@ -1,6 +1,6 @@
 package com.officeflow.domain.enums;
 
-public enum BookingStatus {
+public enum BookingStatusEnum {
     ATTESA,
     COMPLETATO
 }

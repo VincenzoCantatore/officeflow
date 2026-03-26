@@ -1,8 +1,8 @@
 package com.officeflow.service;
 
 import com.officeflow.domain.Booking;
-import com.officeflow.domain.enums.BookingStatus;
-import com.officeflow.domain.enums.ResourceType;
+import com.officeflow.domain.enums.BookingStatusEnum;
+import com.officeflow.domain.enums.ResourceTypeEnum;
 import com.officeflow.dto.request.BookingRequestDTO;
 import com.officeflow.dto.response.BookingResponseDTO;
 import com.officeflow.exception.BookingConflictException; // Assicurati di aver creato queste classi
@@ -51,7 +51,7 @@ public class BookingService {
         }
 
         // limite DESK giornaliero
-        if (resource.getType() == ResourceType.DESK) {
+        if (resource.getType() == ResourceTypeEnum.DESK) {
             boolean hasAlreadyBookedADesk = bookingRepository.existsByUserIdAndDate(request.getUserId(), request.getDate());
 
             if (hasAlreadyBookedADesk) {
@@ -73,7 +73,7 @@ public class BookingService {
 
         // salvataggio
         Booking entity = bookingMapper.toEntity(request);
-        entity.setStatus(BookingStatus.ATTESA);
+        entity.setStatus(BookingStatusEnum.ATTESA);
         Booking saved = bookingRepository.save(entity);
         return bookingMapper.toResponse(saved);
     }
