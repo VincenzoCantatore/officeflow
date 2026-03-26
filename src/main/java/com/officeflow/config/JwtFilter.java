@@ -1,6 +1,6 @@
 package com.officeflow.config;
 
-import com.officeflow.repository.TokenRepository; // Importa il nuovo repository
+import com.officeflow.repository.TokenRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,52 +24,60 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;
     private final UserDetailsService userDetailsService;
-    private final TokenRepository tokenRepository; // Iniezione del repository dei token
+    private final TokenRepository tokenRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        try {
-            String jwt = parseJwt(request);
 
-            if (jwt != null) {
-                // 1. PRIMO CONTROLLO: Esiste nel Database? (Quello che cercavi tu)
-                boolean existsInDb = tokenRepository.findByToken(jwt).isPresent();
+        // Estraiamo il token dall'header
+        String jwt = parseJwt(request);
 
-                // 2. SECONDO CONTROLLO: La firma e la scadenza sono valide?
-                if (existsInDb && jwtUtils.validateJwtToken(jwt)) {
-
-                    String email = jwtUtils.getEmailFromJwtToken(jwt);
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                            userDetails, null, userDetails.getAuthorities());
-
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                    // OK: L'utente è autorizzato
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                } else {
-                    // SE IL TOKEN NON È NEL DB O È SBAGLIATO (es. una sola lettera "X")
-                    log.warn("Accesso negato: Token non trovato nel DB o non valido.");
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    response.setContentType("application/json");
-                    response.getWriter().write("{\"error\": \"Accesso negato: Token non autorizzato o inesistente\"}");
-                    return; // Blocca la catena di filtri qui
-                }
-            }
-        } catch (Exception e) {
-            log.error("Errore durante l'autenticazione JWT: {}", e.getMessage());
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        // Se non c'è il token, passiamo oltre.
+        // Sarà la SecurityConfig a bloccare l'accesso se la rotta è protetta.
+        if (jwt == null) {
+            filterChain.doFilter(request, response);
             return;
         }
 
-        filterChain.doFilter(request, response);
+        try {
+            // Controllo incrociato: Esiste nel DB? E la firma è valida?
+            boolean existsInDb = tokenRepository.findByToken(jwt).isPresent();
+            boolean isValidSignature = jwtUtils.validateJwtToken(jwt);
+
+            if (existsInDb && isValidSignature) {
+                // Token perfetto: procediamo con l'autenticazione
+                String email = jwtUtils.getEmailFromJwtToken(jwt);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities());
+
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                // Vai al prossimo filtro/controller
+                filterChain.doFilter(request, response);
+            } else {
+                // TOKEN RIFIUTATO: Qui blocchiamo la catena
+                log.warn("Tentativo di accesso fallito: Token non trovato nel DB o firma non valida. Token: {}", jwt);
+                sendUnauthorizedResponse(response, "Token non autorizzato o inesistente nel database");
+                // IMPORTANTE: Nessun filterChain.doFilter() qui, la richiesta muore!
+            }
+        } catch (Exception e) {
+            log.error("Errore critico nella validazione del token: {}", e.getMessage());
+            sendUnauthorizedResponse(response, "Token malformato o errore di sistema");
+        }
+    }
+
+    private void sendUnauthorizedResponse(HttpServletResponse response, String message) throws IOException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
+        response.getWriter().write("{\"status\": 401, \"error\": \"Unauthorized\", \"message\": \"" + message + "\"}");
     }
 
     private String parseJwt(HttpServletRequest request) {
         String headerAuth = request.getHeader("Authorization");
-
         if (headerAuth != null && headerAuth.startsWith("Bearer ")) {
             return headerAuth.substring(7);
         }

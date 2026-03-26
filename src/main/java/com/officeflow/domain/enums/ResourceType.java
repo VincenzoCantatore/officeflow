@@ -1,4 +1,4 @@
-package com.officeflow.domain;
+package com.officeflow.domain.enums;
 
 public enum ResourceType {
     DESK,

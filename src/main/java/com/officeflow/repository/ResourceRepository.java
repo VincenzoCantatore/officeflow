@@ -1,7 +1,7 @@
 package com.officeflow.repository;
 
 import com.officeflow.domain.Resource;
-import com.officeflow.domain.ResourceType;
+import com.officeflow.domain.enums.ResourceType;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;

@@ -1,5 +1,6 @@
 package com.officeflow.domain;
 
+import com.officeflow.domain.enums.UserRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -32,7 +33,7 @@ public class User implements UserDetails { // Fondamentale per Spring Security
     @NotBlank(message = "Password obbligatoria")
     private String password; // Aggiunta per il login
 
-    private String role; // Es. "USER" o "ADMIN"
+    private UserRole role; // Es. "USER" o "ADMIN"
 
     //  METODI DI SPRING SECURITY
     @Override

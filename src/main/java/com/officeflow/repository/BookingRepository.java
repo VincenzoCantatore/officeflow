@@ -1,6 +1,7 @@
 package com.officeflow.repository;
 
 import com.officeflow.domain.Booking;
+import com.officeflow.domain.enums.BookingStatus;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -16,8 +17,8 @@ public interface BookingRepository extends MongoRepository<Booking, String> {
 
     boolean existsByUserIdAndDate(String userId, LocalDate date);
 
-    List<Booking> findByDateAndEndHourBeforeAndStatusNot(LocalDate date, LocalTime time, String status);
+    List<Booking> findByDateAndEndHourBeforeAndStatusNot(LocalDate date, LocalTime time, BookingStatus status);
 
-    List<Booking> findByDateBeforeAndStatusNot (LocalDate date , String status);
+    List<Booking> findByDateBeforeAndStatusNot (LocalDate date , BookingStatus status);
 
 }

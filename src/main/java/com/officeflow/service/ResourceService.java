@@ -1,7 +1,6 @@
 package com.officeflow.service;
 
 import com.officeflow.domain.Resource;
-import com.officeflow.domain.ResourceType;
 import org.springframework.stereotype.Service;
 import com.officeflow.repository.ResourceRepository;
 

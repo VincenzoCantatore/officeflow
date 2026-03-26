@@ -1,6 +1,7 @@
 package com.officeflow.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.officeflow.domain.enums.BookingStatus;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 
@@ -25,5 +26,5 @@ public class BookingResponseDTO {
     @JsonFormat(pattern = "HH:mm")
     private LocalTime endHour;
 
-    private String status;
+    private BookingStatus status;
 }

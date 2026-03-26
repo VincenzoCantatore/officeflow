@@ -1,7 +1,8 @@
 package com.officeflow.service;
 
 import com.officeflow.domain.Booking;
-import com.officeflow.domain.ResourceType;
+import com.officeflow.domain.enums.BookingStatus;
+import com.officeflow.domain.enums.ResourceType;
 import com.officeflow.dto.request.BookingRequestDTO;
 import com.officeflow.dto.response.BookingResponseDTO;
 import com.officeflow.exception.BookingConflictException; // Assicurati di aver creato queste classi
@@ -72,6 +73,7 @@ public class BookingService {
 
         // salvataggio
         Booking entity = bookingMapper.toEntity(request);
+        entity.setStatus(BookingStatus.ATTESA);
         Booking saved = bookingRepository.save(entity);
         return bookingMapper.toResponse(saved);
     }

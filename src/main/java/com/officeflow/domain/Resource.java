@@ -1,12 +1,12 @@
 package com.officeflow.domain;
 
+import com.officeflow.domain.enums.ResourceType;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.List;
-import java.util.Objects;
 
 @Data
 @Document(collection = "resources")

@@ -1,6 +1,7 @@
 package com.officeflow.service;
 
 import com.officeflow.domain.User;
+import com.officeflow.domain.enums.UserRole;
 import com.officeflow.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,13 +29,13 @@ public class UserService {
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
 
-        // Ruolo di default (se non specificato)
-        if (user.getRole() == null || user.getRole().isEmpty()) {
-            user.setRole("USER");
+        if (user.getEmail().toLowerCase().endsWith("@officeflow.admin.com")) {
+            user.setRole(UserRole.ADMIN);
+        } else {
+            user.setRole(UserRole.USER);
         }
-
         return userRepository.save(user);
-    }
+        }
 
     public void deleteUser(String id) {
 

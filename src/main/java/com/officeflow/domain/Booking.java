@@ -1,5 +1,6 @@
 package com.officeflow.domain;
 
+import com.officeflow.domain.enums.BookingStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,6 @@ public class Booking {
     private LocalDate date;
     private LocalTime startHour;
     private LocalTime endHour;
-    private String status =  "ATTESA";
+    private BookingStatus status;
     private LocalTime adesso ;
 }

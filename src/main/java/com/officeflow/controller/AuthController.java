@@ -2,10 +2,10 @@ package com.officeflow.controller;
 
 import com.officeflow.config.JwtUtils;
 import com.officeflow.domain.User;
-import com.officeflow.domain.StoredToken; // Importa il nuovo model
+import com.officeflow.domain.StoredToken;
 import com.officeflow.dto.request.LoginRequestDTO;
 import com.officeflow.dto.response.JwtResponseDTO;
-import com.officeflow.repository.TokenRepository; // Importa il nuovo repository
+import com.officeflow.repository.TokenRepository;
 import com.officeflow.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +27,7 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
     private final JwtUtils jwtUtils;
-    private final TokenRepository tokenRepository; // Aggiunto per gestire il database dei token
+    private final TokenRepository tokenRepository;
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
@@ -36,27 +36,31 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequestDTO loginRequest) {
-        // 1. Autenticazione standard email/password
+        // 1. Autenticazione: controlla se email e password sono corretti
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
 
         // 2. Generazione del Token JWT
         String jwt = jwtUtils.generateToken(authentication);
-
-        // 3. Recupero dettagli utente
         User userDetails = (User) authentication.getPrincipal();
 
-        // --- NUOVA LOGICA: SALVATAGGIO NEL DATABASE ---
-        // Prima di rispondere, salviamo il token nel DB per renderlo "ufficiale"
-        StoredToken storedToken = StoredToken.builder()
-                .token(jwt)
-                .userEmail(userDetails.getEmail())
-                .revoked(false)
-                .createdAt(LocalDateTime.now())
-                .build();
+        // 3. SALVATAGGIO NEL DATABASE (Cruciale per il JwtFilter)
+        try {
+            StoredToken storedToken = StoredToken.builder()
+                    .token(jwt)
+                    .userEmail(userDetails.getEmail())
+                    .revoked(false)
+                    .createdAt(LocalDateTime.now())
+                    .build();
 
-        tokenRepository.save(storedToken);
-        // ----------------------------------------------
+            tokenRepository.save(storedToken);
+            System.out.println("DEBUG: Token salvato con successo nel DB per l'utente: " + userDetails.getEmail());
+        } catch (Exception e) {
+            System.err.println("ERRORE CRITICO: Impossibile salvare il token su MongoDB!");
+            e.printStackTrace();
+            // Opzionale: puoi decidere di bloccare il login se il DB non risponde
+            // return ResponseEntity.internalServerError().body("Errore salvataggio sessione");
+        }
 
         // 4. Risposta al client
         return ResponseEntity.ok(new JwtResponseDTO(
