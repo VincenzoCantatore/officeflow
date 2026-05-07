@@ -1,6 +1,7 @@
 package com.officeflow.service;
 
 import com.officeflow.domain.Resource;
+import com.officeflow.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import com.officeflow.repository.ResourceRepository;
 
@@ -27,6 +28,9 @@ public class ResourceService {
     }
 
     public void deleteResource(String id) {
+        if (!resourceRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Risorsa non trovata con ID: " + id);
+        }
 
         resourceRepository.deleteById(id);
     }

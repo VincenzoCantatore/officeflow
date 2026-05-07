@@ -1,5 +1,6 @@
 package com.officeflow.config;
 
+import com.officeflow.domain.StoredToken;
 import com.officeflow.repository.TokenRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -42,10 +43,11 @@ public class JwtFilter extends OncePerRequestFilter {
 
         try {
             // Controllo incrociato: Esiste nel DB? E la firma è valida?
-            boolean existsInDb = tokenRepository.findByToken(jwt).isPresent();
+            StoredToken storedToken = tokenRepository.findByToken(jwt).orElse(null);
+            boolean isActiveInDb = storedToken != null && !storedToken.isRevoked();
             boolean isValidSignature = jwtUtils.validateJwtToken(jwt);
 
-            if (existsInDb && isValidSignature) {
+            if (isActiveInDb && isValidSignature) {
                 // Token perfetto: procediamo con l'autenticazione
                 String email = jwtUtils.getEmailFromJwtToken(jwt);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
@@ -60,8 +62,8 @@ public class JwtFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
             } else {
                 // TOKEN RIFIUTATO: Qui blocchiamo la catena
-                log.warn("Tentativo di accesso fallito: Token non trovato nel DB o firma non valida. Token: {}", jwt);
-                sendUnauthorizedResponse(response, "Token non autorizzato o inesistente nel database");
+                log.warn("Tentativo di accesso fallito: token assente, revocato o firma non valida");
+                sendUnauthorizedResponse(response, "Token non autorizzato, revocato o inesistente nel database");
                 // IMPORTANTE: Nessun filterChain.doFilter() qui, la richiesta muore!
             }
         } catch (Exception e) {

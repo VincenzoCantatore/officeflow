@@ -1,6 +1,8 @@
 package com.officeflow.controller;
 
 import com.officeflow.domain.User;
+import com.officeflow.dto.request.UserRequestDTO;
+import com.officeflow.dto.response.UserResponseDTO;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import com.officeflow.service.UserService;
@@ -19,20 +21,42 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> getUsers() {
+    public List<UserResponseDTO> getUsers() {
 
-        return userService.getAllUsers();
+        return userService.getAllUsers()
+                .stream()
+                .map(this::toResponse)
+                .toList();
     }
 
     @PostMapping
-    public User createUser(@Valid @RequestBody User user) {
+    public UserResponseDTO createUser(@Valid @RequestBody UserRequestDTO request) {
 
-        return userService.createUser(user);
+        return toResponse(userService.createUser(toUser(request)));
     }
 
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable String id) {
 
         userService.deleteUser(id);
+    }
+
+    private User toUser(UserRequestDTO request) {
+        User user = new User();
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setEmail(request.getEmail());
+        user.setPassword(request.getPassword());
+        return user;
+    }
+
+    private UserResponseDTO toResponse(User user) {
+        return new UserResponseDTO(
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                user.getRole()
+        );
     }
 }

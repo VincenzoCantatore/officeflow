@@ -3,6 +3,7 @@ package com.officeflow.controller;
 import com.officeflow.dto.request.BookingRequestDTO;
 import com.officeflow.dto.response.BookingResponseDTO;
 import com.officeflow.service.BookingService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class BookingController {
     private final BookingService bookingService;
 
     @PostMapping
-    public ResponseEntity<BookingResponseDTO> createBooking(@RequestBody BookingRequestDTO request) {
+    public ResponseEntity<BookingResponseDTO> createBooking(@Valid @RequestBody BookingRequestDTO request) {
 
         return new ResponseEntity<>(bookingService.createBooking(request), HttpStatus.CREATED);
     }

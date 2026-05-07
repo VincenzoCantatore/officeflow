@@ -22,5 +22,4 @@ public class Booking {
     private LocalTime startHour;
     private LocalTime endHour;
     private BookingStatusEnum status;
-    private LocalTime adesso ;
 }

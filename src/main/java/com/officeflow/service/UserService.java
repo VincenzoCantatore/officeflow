@@ -2,6 +2,7 @@ package com.officeflow.service;
 
 import com.officeflow.domain.User;
 import com.officeflow.domain.enums.UserRoleEnum;
+import com.officeflow.exception.ResourceNotFoundException;
 import com.officeflow.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -38,6 +39,9 @@ public class UserService {
         }
 
     public void deleteUser(String id) {
+        if (!userRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Utente non trovato con ID: " + id);
+        }
 
         userRepository.deleteById(id);
     }
