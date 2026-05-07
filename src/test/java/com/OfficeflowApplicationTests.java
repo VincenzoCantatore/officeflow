@@ -1,4 +1,4 @@
-package com.example.officeflow;
+package com;
 
 import com.officeflow.OfficeflowApplication;
 import org.junit.jupiter.api.Test;
